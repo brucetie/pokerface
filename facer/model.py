@@ -62,6 +62,15 @@ class FemaleFace(BaseModel):
         session.commit()
         return record
 
+    @classmethod
+    def iteration(cls):
+        """遍历整个表"""
+        session = Session()
+        query = session.query(cls).filter(cls.landmark != u'')
+        for record in query:
+            yield record
+        session.commit()
+
 
 def init_table():
     """

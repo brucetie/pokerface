@@ -48,4 +48,4 @@ def detect_face(record_id, file_path):
         return 0
 
     FemaleFace.update(record_id, landmark=json.dumps(fist_landmark))
-    return 1
+    return fist_landmark
