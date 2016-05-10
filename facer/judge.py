@@ -14,7 +14,7 @@ image_dir = '/Users/ruoyuliu/Downloads/aaa'
 master = None
 tk_image = None
 face_file_list = None
-offset = 1000
+offset = 0
 face_record, face_image, face_label, index_label, detect_label = [None for i in range(5)]
 
 
