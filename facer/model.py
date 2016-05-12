@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 BaseModel = declarative_base()
-db_name = os.path.join(current_dir, 'face.sqlite')
+db_name = os.path.join(current_dir, 'face.sqlite.bak')
 engine = create_engine('sqlite:///{}'.format(db_name))
 Session = sessionmaker(bind=engine)
 
@@ -21,7 +21,7 @@ class FemaleFace(BaseModel):
     id = Column(Integer, primary_key=True)
     filename = Column(String(20), nullable=False)
     label = Column(Integer, nullable=False)
-    landmark = Column(String(8000), nullable=False)
+    info = Column(String(8000), nullable=False)
 
     @classmethod
     def get(cls, filename):
@@ -63,13 +63,12 @@ class FemaleFace(BaseModel):
         return record
 
     @classmethod
-    def iteration(cls):
+    def get_all(cls):
         """遍历整个表"""
         session = Session()
-        query = session.query(cls).filter(cls.landmark != u'')
-        for record in query:
-            yield record
+        result = session.query(cls).order_by(cls.id.asc()).all()
         session.commit()
+        return result
 
 
 def init_table():
