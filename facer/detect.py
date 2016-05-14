@@ -6,7 +6,7 @@ import os
 import json
 import mimetypes
 import requests
-from model import FemaleFace
+from model import FemaleFace, Session
 
 BASE_URL = 'http://apicn.faceplusplus.com/v2'
 API_KEY = '8f44e5d3371ece33d0066ef3be84e0a7'
@@ -35,9 +35,32 @@ def detect_face(record_id, file_path):
                      open(file_path, 'rb'),
                      mimetypes.guess_type(file_path)[0]), }
     response = requests.post(upload_url, files=files)
-    result = response.json()
-    if not result.get('face'):
-        return None
+    info = response.json()
+    FemaleFace.update(record_id, info=json.dumps(info))
 
-    FemaleFace.update(record_id, landmark=json.dumps(result))
-    return result
+    faces = info.get('face', [])
+    if not faces:
+        return 0
+
+    face_id = faces[0].get('face_id', '')
+    landmark_url = '{}/detection/landmark?api_key={}&api_secret={}&face_id={}&type=83p'.format(
+        BASE_URL, API_KEY, API_SECRET, face_id
+    )
+    response = requests.get(landmark_url)
+    landmarks = response.json().get('result', [])
+    if not landmarks:
+        return 0
+
+    landmark = landmarks[0].get('landmark')
+    if not landmark:
+        return 0
+
+    FemaleFace.update(record_id, landmark=json.dumps(landmark))
+    return 1
+
+if __name__ == '__main__':
+    session = Session()
+    pretty_faces = session.query(FemaleFace).filter(FemaleFace.label == 0)
+    for face in pretty_faces:
+        file_path = '/Users/ruoyuliu/Downloads/aaa/{}'.format(face.filename)
+        print detect_face(face.id, file_path)

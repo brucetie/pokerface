@@ -38,6 +38,19 @@ class FemaleFace(BaseModel):
         return result
 
     @classmethod
+    def get_file_by_label(cls, label):
+        """
+        根据标签找出文件名称
+        :param label: (int) 标签
+        :return: (list) filename列表
+        """
+        session = Session()
+        query = session.query(cls.filename).filter(cls.label == label).filter(cls.landmark != '')
+        result = query.all()
+        session.commit()
+        return [x[0] for x in result]
+
+    @classmethod
     def update(cls, record_id, label=None, info=None, landmark=None):
         session = Session()
         target = session.query(cls).filter(cls.id == record_id)
@@ -57,6 +70,7 @@ class FemaleFace(BaseModel):
 
         :param filename: (string) 文件名
         :param label: (int) 标签
+        :param info: (string) 图片信息
         :param landmark: (string) 面部关键点坐标
         """
         session = Session()
