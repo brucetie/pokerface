@@ -9,8 +9,10 @@ import requests
 from model import FemaleFace, Session
 
 BASE_URL = 'http://apicn.faceplusplus.com/v2'
-API_KEY = '8f44e5d3371ece33d0066ef3be84e0a7'
-API_SECRET = 'e1wUSyrIwrOpnBKWMLFtrzZpoX4HFzgL'
+
+# 填写自己的API_KEY和API_SECRET
+API_KEY = '*****'
+API_SECRET = '******'
 current_dir = os.path.abspath(os.path.curdir)
 
 

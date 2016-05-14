@@ -98,7 +98,9 @@ keyPointsNumber = len(keyPoints)
 def readPoints(landmark):
     points = []
     for item in keyPoints:
-        x, y = landmark[item]['x'] * 4.8, landmark[item]['y'] * 6.4
+        # 所有的图片都是640 * 480
+        # 为了通用考虑可以获取图片尺寸
+        x, y = landmark[item]['x'] * 480 / 100., landmark[item]['y'] * 640 / 100.
         points.append((int(x), int(y)))
     return points
 
@@ -267,7 +269,8 @@ if __name__ == '__main__' :
     w = 500
     h = 500
 
-    fileList = FemaleFace.get_file_by_label(1)
+    # 0丑 1一般 2漂亮
+    fileList = FemaleFace.get_file_by_label(2)
     fileList = [u'/Users/ruoyuliu/Downloads/aaa/{}'.format(x) for x in fileList]
     # Read all images
     images, allPoints = readImages(fileList)
