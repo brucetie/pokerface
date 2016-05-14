@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 BaseModel = declarative_base()
-db_name = os.path.join(current_dir, 'face.sqlite.bak')
+db_name = os.path.join(current_dir, 'face.sqlite')
 engine = create_engine('sqlite:///{}'.format(db_name))
 Session = sessionmaker(bind=engine)
 
@@ -21,7 +21,8 @@ class FemaleFace(BaseModel):
     id = Column(Integer, primary_key=True)
     filename = Column(String(20), nullable=False)
     label = Column(Integer, nullable=False)
-    info = Column(String(8000), nullable=False)
+    info = Column(String(5000))
+    landmark = Column(String(8000))
 
     @classmethod
     def get(cls, filename):
@@ -37,19 +38,21 @@ class FemaleFace(BaseModel):
         return result
 
     @classmethod
-    def update(cls, record_id, label=None, landmark=None):
+    def update(cls, record_id, label=None, info=None, landmark=None):
         session = Session()
         target = session.query(cls).filter(cls.id == record_id)
         result = 0
         if label is not None:
             result = target.update({'label': label})
+        if info is not None:
+            result = target.update({'info': info})
         if landmark is not None:
             result = target.update({'landmark': landmark})
         session.commit()
         return result
 
     @classmethod
-    def add(cls, filename, label, landmark=u''):
+    def add(cls, filename, label, info=u'', landmark=u''):
         """添加转移记录
 
         :param filename: (string) 文件名
@@ -57,7 +60,7 @@ class FemaleFace(BaseModel):
         :param landmark: (string) 面部关键点坐标
         """
         session = Session()
-        record = cls(filename=filename, label=label, landmark=landmark)
+        record = cls(filename=filename, label=label, info=info, landmark=landmark)
         session.add(record)
         session.commit()
         return record
